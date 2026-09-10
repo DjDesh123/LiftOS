@@ -3,6 +3,7 @@
 #include "components/button.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "components/servo.h"
 
 
 
@@ -10,15 +11,14 @@ void app_main(void)
 {
     LED_Init();
     Button_Init();
+    Servo_Init();
 
     while (1) {
-        int button_state = Button_Pressed_Check();
+        Open_Door();
+        vTaskDelay(1000 / portTICK_PERIOD_MS); // Wait for 1
+        Close_Door();
+        vTaskDelay(1000 / portTICK_PERIOD_MS); // Wait for 1
         
-        if (button_state == 1) {
-            LED_On();
-        } else {
-            LED_Off();
-        }
     }
        
 }
