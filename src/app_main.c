@@ -4,6 +4,8 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "components/servo.h"
+#include "components/stepper.h"
+
 
 
 
@@ -12,13 +14,13 @@ void app_main(void)
     LED_Init();
     Button_Init();
     Servo_Init();
+    Stepper_Init();
 
     while (1) {
-        Open_Door();
-        vTaskDelay(1000 / portTICK_PERIOD_MS); // Wait for 1
-        Close_Door();
-        vTaskDelay(1000 / portTICK_PERIOD_MS); // Wait for 1
-        
+       
+        if (Button_Pressed_Check()) {
+            Stepper_Movement();
+        }
     }
        
 }
