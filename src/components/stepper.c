@@ -1,5 +1,20 @@
 #include "components/servo.h"
 
+
+// holds the floors
+typdef struct = {
+    GROUND_FLOOR,
+    FIRST_FLOOR,
+    SECOND_FLOOR,
+    THIRD_FLOOR
+} Floors
+
+// creates a struct for the cart to make it be able to hold a position
+typedef struct{
+    int Floor_Position;
+    
+}
+
 void Stepper_Init() {
     // Initialize the stepper motor
     gpio_set_direction(STEPPER_PIN1, GPIO_MODE_OUTPUT);
@@ -9,7 +24,7 @@ void Stepper_Init() {
 
 }
 
-//delay for 2 seconds
+
 void Stepper_Movement(){
 
     for (int i = 0; i < TOTAL_STEPS; i++) {
@@ -49,4 +64,5 @@ void static Reset_Stepper() {
     gpio_set_level(STEPPER_PIN3, 0);
     gpio_set_level(STEPPER_PIN4, 0);
 }
+
 

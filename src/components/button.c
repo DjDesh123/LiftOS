@@ -6,6 +6,20 @@ typedef enum {
     BUTTON_PRESSED
 } ButtonState;
 
+typedef enum{
+    GROUND_FLOOR,
+    FIRST_FLOOR,
+    SECOND_FLOOR,
+    THIRD_FLOOR
+}Floors;
+
+
+typedef struct{
+    int Floor_Position;
+    int Press_Check;
+} Button
+
+
 
 // defines the tag at the top of the file for logging purposes
 static const char *TAG = "Button";
@@ -15,6 +29,7 @@ static const char *TAG = "Button";
 void Button_Init() {
     gpio_set_direction(BUTTON_PIN, GPIO_MODE_INPUT);
     gpio_set_pull_mode(BUTTON_PIN, GPIO_PULLDOWN_ONLY);
+
 }
 
 
