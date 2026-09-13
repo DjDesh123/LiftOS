@@ -7,6 +7,7 @@ void init_LiftOS() {
     Button_Init();
     Servo_Init();
     Stepper_Init();
+
 }
 
 void run_LiftOS() {

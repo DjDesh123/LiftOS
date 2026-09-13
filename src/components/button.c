@@ -14,10 +14,18 @@ typedef enum{
 }Floors;
 
 
+gpio_config_t io_conf = {
+    .pin_bit_mask = (1ULL << BUTTON_PIN),
+    .mode = GPIO_MODE_INPUT,
+    .pull_up_en = GPIO_PULLDOWN_ONLY,
+    .intr_type = GPIO_INTR_DISABLE
+};
+
+
 typedef struct{
+    gpio_config_t Gpio_Config;
     int Floor_Position;
-    int Press_Check;
-} Button
+} Button;
 
 
 
@@ -27,8 +35,12 @@ static const char *TAG = "Button";
 
 //sets up the button pin as an input and with a pull down resistor
 void Button_Init() {
-    gpio_set_direction(BUTTON_PIN, GPIO_MODE_INPUT);
-    gpio_set_pull_mode(BUTTON_PIN, GPIO_PULLDOWN_ONLY);
+
+    Button button = {
+        .Gpio_Config = io_conf,
+        .Floor_Position = GROUND_FLOOR
+        
+    }
 
 }
 

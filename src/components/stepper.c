@@ -1,19 +1,36 @@
 #include "components/servo.h"
+#include "driver/gpio.h"
 
 
 // holds the floors
-typdef struct = {
+typedef enum {
     GROUND_FLOOR,
     FIRST_FLOOR,
     SECOND_FLOOR,
     THIRD_FLOOR
-} Floors
+} Floors;
 
+
+gpio_config_t Stepper_gpio_config={
+    .pin_bit_mask = (1ULL << BUTTON_PIN),
+    .mode = GPIO_MODE_INPUT,
+    .pull_up_en = GPIO_PULLDOWN_ONLY,
+    .intr_type = GPIO_INTR_DISABLE
+};
+
+
+
+
+
+}
 // creates a struct for the cart to make it be able to hold a position
 typedef struct{
     int Floor_Position;
-    
+
 }
+
+
+
 
 void Stepper_Init() {
     // Initialize the stepper motor
