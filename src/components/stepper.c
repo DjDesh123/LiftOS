@@ -1,9 +1,4 @@
-#include "components/stepper.h"
-#include "driver/gpio.h"
-#include "freertos/FreeRTOS.h"
-#include "esp_rom_sys.h"
-
-#define TOTAL_STEPS 512 
+#include "components/servo.h"
 
 void Stepper_Init() {
     // Initialize the stepper motor
