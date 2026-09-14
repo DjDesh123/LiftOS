@@ -7,12 +7,6 @@ typedef enum {
     BUTTON_PRESSED
 } ButtonState;
 
-typedef enum{
-    GROUND_FLOOR,
-    FIRST_FLOOR,
-    SECOND_FLOOR,
-    THIRD_FLOOR
-}Floors;
 
 
 gpio_config_t io_conf = {
@@ -23,10 +17,6 @@ gpio_config_t io_conf = {
 };
 
 
-typedef struct{
-    gpio_config_t Gpio_Config;
-    Floors Floor_Position;
-} Button;
 
 
 
