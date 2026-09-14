@@ -28,6 +28,7 @@ typedef struct{
     gpio_config_t Gpio_Config;
     Floors Floor_Position;
     gpio_num_t pins[4];
+    Floors Desired_Floor;
   
 } Cab;
 

@@ -35,7 +35,8 @@ Cab Stepper_Init() {
             STEPPER_PIN2,
             STEPPER_PIN3,
             STEPPER_PIN4
-        }
+        },
+        .Desired_Floor = GROUND_FLOOR
     };
 
     esp_err_t result = gpio_config(&Stepper_Gpio_Config);
