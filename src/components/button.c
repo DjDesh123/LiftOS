@@ -45,14 +45,14 @@ Button Button_Init() {
     
     esp_err_t result = gpio_config(&button.Gpio_Config);
 
-    if (result !- ESP_OK){
+    if (result != ESP_OK){
         ESP_LOGE(TAG, "Failed to configure the button gpio: %s", esp_err_to_name(result));
 
     }
-}
+
 
     return button;
-
+}
 
 int Button_Pressed_Check() {
     int button_state = gpio_get_level(BUTTON_PIN);
