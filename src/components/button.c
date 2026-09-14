@@ -1,4 +1,5 @@
 #include "components/button.h"
+#include "esp_err.h"
 
 
 typedef enum {
@@ -24,7 +25,7 @@ gpio_config_t io_conf = {
 
 typedef struct{
     gpio_config_t Gpio_Config;
-    int Floor_Position;
+    Floors Floor_Position;
 } Button;
 
 
@@ -34,15 +35,23 @@ static const char *TAG = "Button";
 
 
 //sets up the button pin as an input and with a pull down resistor
-void Button_Init() {
+Button Button_Init() {
 
     Button button = {
         .Gpio_Config = io_conf,
         .Floor_Position = GROUND_FLOOR
         
     }
+    
+    esp_err_t result = gpio_config(&button.Gpio_Config);
 
+    if (result !- ESP_OK){
+        ESP_LOGE(TAG, "Failed to configure the button gpio: %s", esp_err_to_name(result));
+
+    }
 }
+
+    return button;
 
 
 int Button_Pressed_Check() {

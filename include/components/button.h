@@ -6,7 +6,7 @@
 
 #define BUTTON_PIN GPIO_NUM_15
 
-void Button_Init();
+Button Button_Init();
 int Button_Pressed_Check();
 
 #endif
