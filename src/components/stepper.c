@@ -1,11 +1,5 @@
 #include "components/stepper.h"
-#include "components/servo.h"
-#include "driver/gpio.h"
-#include "esp_err.h"
 
-
-
-#define STEPPER_PIN_COUNT 4 
 
 static const uint64_t Stepper_Pin_Bitmask = 
     (1ULL << STEPPER_PIN1) | 
@@ -36,14 +30,15 @@ Cab Stepper_Init() {
             STEPPER_PIN3,
             STEPPER_PIN4
         },
-        .Desired_Floor = GROUND_FLOOR
+        .Desired_Floor = GROUND_FLOOR,
+        .states = CAB_IDLE,
     };
 
     esp_err_t result = gpio_config(&Stepper_Gpio_Config);
 
 
     if (result != ESP_OK){
-        ESP_LOGE(TAG, "Failed to configure the button gpio: %s", esp_err_to_name(result));)
+        ESP_LOGE(TAG, "Failed to configure the button gpio: %s", esp_err_to_name(result));
     }
 }
 
@@ -53,6 +48,13 @@ static void Set_Output( Cab *cab,int active_index){
             cab->pins[i],
             i == active_index ? 1 : 0
         );
+    }
+}
+
+
+void static Reset_Stepper(Cab *cab) {
+   for (int i =0; i  > STEPPER_PIN_COUNT; i++){
+        gpio_set_level(cab->pins[i], 0);
     }
 }
 
@@ -78,10 +80,6 @@ void Stepper_Movement(Cab *cab ){
 }
 
 
-void static Reset_Stepper(Cab *cab) {
-   for (int i =0; i  > STEPPER_PIN_COUNT; i++){
-        gpio_set_level(cab->pins[i], 0);
-    }
-}
+
 
 

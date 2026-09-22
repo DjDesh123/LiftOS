@@ -1,22 +1,12 @@
 #include "components/button.h"
-#include "esp_err.h"
-
-
-typedef enum {
-    BUTTON_RELEASED,
-    BUTTON_PRESSED
-} ButtonState;
-
 
 
 gpio_config_t io_conf = {
     .pin_bit_mask = (1ULL << BUTTON_PIN),
     .mode = GPIO_MODE_INPUT,
     .pull_up_en = GPIO_PULLDOWN_ONLY,
-    .intr_type = GPIO_INTR_DISABLE
+    .intr_type = GPIO_INTR_DISABLE,
 };
-
-
 
 
 
@@ -29,9 +19,9 @@ Button Button_Init() {
 
     Button button = {
         .Gpio_Config = io_conf,
-        .Floor_Position = GROUND_FLOOR
+        .Floor_Position = GROUND_FLOOR,
         
-    }
+    };
     
     esp_err_t result = gpio_config(&button.Gpio_Config);
 
