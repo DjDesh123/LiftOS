@@ -1,6 +1,9 @@
 #include "LiftOS.h"
 
 
+QueueHandle_t queue;
+QueueHandle_t Destination_Queue;
+
 void init_LiftOS(void)
 {
     LED_Init();
@@ -133,6 +136,7 @@ void Destination_Task(void *parameter)
                 break;
         }
     }
+    vTaskDelay(pdMS_TO_TICKS(10));
 }
 
 
