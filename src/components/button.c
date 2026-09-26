@@ -1,10 +1,12 @@
 #include "components/button.h"
+#include "hal/gpio_types.h"
 
 
 gpio_config_t io_conf = {
     .pin_bit_mask = (1ULL << BUTTON_PIN),
     .mode = GPIO_MODE_INPUT,
-    .pull_up_en = GPIO_PULLDOWN_ONLY,
+    .pull_up_en = GPIO_PULLUP_DISABLE,
+    .pull_down_en = GPIO_PULLDOWN_ENABLE,
     .intr_type = GPIO_INTR_DISABLE,
 };
 

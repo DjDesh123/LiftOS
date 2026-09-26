@@ -1,11 +1,31 @@
 #include "LiftOS.h"
+#include "components/LED.h"
+#include "esp_err.h"
+
 
 
 QueueHandle_t queue;
 QueueHandle_t Destination_Queue;
 
-void init_LiftOS(void)
-{
+
+uart_config_t uart_config = {
+    .baud_rate = 115200,
+    .data_bits = UART_DATA_8_BITS,
+    .parity = UART_PARITY_DISABLE,
+    .stop_bits = UART_STOP_BITS_1,
+    .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
+    .source_clk = UART_SCLK_DEFAULT,
+};
+
+
+void init_LiftOS(void){
+
+
+    //ESP_ERROR_CHECK(uart_param_config(UART_NUM_0,&uart_config));
+
+    uart_driver_install(UART_NUM_0,1024,1024,0,NULL,0);
+    uart_vfs_dev_use_driver(UART_NUM_0);
+    
     LED_Init();
 
     Button button = Button_Init();
@@ -18,15 +38,13 @@ void init_LiftOS(void)
 }
 
 
-void run_LiftOS(Button *button, Cab *cab)
-{
+void run_LiftOS(Button *button, Cab *cab){
     queue = xQueueCreate(5,sizeof(Floors));
-
     Destination_Queue = xQueueCreate(5,sizeof(Floors));
 
 
     // Check BOTH queues
-    if (queue == NULL ||Destination_Queue == NULL){
+    if (queue == NULL || Destination_Queue == NULL){
         printf("Failed to create queue\n");
         return;
     }
@@ -38,21 +56,30 @@ void run_LiftOS(Button *button, Cab *cab)
     }
 
 
-    while (1)
-    {
+    bool buttonHandle = false;
+
+
+    while (1){
         if (Button_Pressed_Check()){
-            Floors txFloor = button->Floor_Position;
 
+            if(!buttonHandle){
+                
+                Floors txFloor = button->Floor_Position;
 
-            if (xQueueSend(queue,&txFloor,0) != pdTRUE){
-                printf("Pickup queue full\n");
-                LED_On();
+                if (xQueueSend(queue,&txFloor,0) != pdTRUE){
+                    printf("Pickup queue full\n");
+                    LED_On();
+                }
+
+                buttonHandle = true;
+         
             }
+        
+        }else{
+            buttonHandle = false;
         }
 
-        vTaskDelay(
-            pdMS_TO_TICKS(10)
-        );
+        vTaskDelay(pdMS_TO_TICKS(10));
     }
 }
 
@@ -140,11 +167,12 @@ void Destination_Task(void *parameter)
 }
 
 
-static void Clear_Buffer(void)
-{
+
+static void Clear_Buffer(){
     int c;
 
-    while ((c = getchar()) != '\n' &&c != EOF){
+    while ((c = getchar()) != '\n' && c != EOF) {
+        // discard remaining characters
     }
 }
 
@@ -154,86 +182,87 @@ void Get_User_Requested_Floor(void)
     Floors RequestedFloor;
 
     int Value;
+    char buffer[1024];
 
-    char response = 'y';
+    char response;
+    int validResponse;
 
 
     do{
-        printf("What floor do you request? [0-3]: ");
+        do{
+            printf("What floor do you request? [0-3]: ");
+            
+
+            fgets(buffer,sizeof(buffer),stdin);
+
+    
+            validResponse = sscanf(buffer,"%d", &Value);
+            
+            if (validResponse != 1){
+                printf("must be between 0 and 3! \n");
+            }
 
 
-     
-        if (scanf("%d", &Value) != 1){
-            printf("Invalid input\n");
+            switch (Value){
+                case 0:
 
-            Clear_Buffer();
-
-            continue;
-        }
+                    RequestedFloor = GROUND_FLOOR;
+                    break;
 
 
-        switch (Value)
-        {
-            case 0:
+                case 1:
 
-                RequestedFloor = GROUND_FLOOR;
-                 break;
+                    RequestedFloor = FIRST_FLOOR;
+                    break;
 
 
-            case 1:
+                case 2:
 
-                RequestedFloor = FIRST_FLOOR;
-                break;
-
-
-            case 2:
-
-                RequestedFloor =SECOND_FLOOR;
-                break;
+                    RequestedFloor = SECOND_FLOOR;
+                    break;
 
 
-            case 3:
+                case 3:
 
-                RequestedFloor = THIRD_FLOOR;
-                break;
+                    RequestedFloor = THIRD_FLOOR;
+                    break;
 
 
-            default:
+                default:
 
-                printf("Invalid floor. Choose 0-3.\n");
-                Clear_Buffer();
-                continue;
-        }
+                    printf("Invalid floor. Choose 0-3.\n");
+                    break;
+            }
 
+        }while(validResponse !=1);
+
+
+        printf("idk if this code is even doing its fucking job %s\n",buffer);
 
         if (xQueueSend(Destination_Queue,&RequestedFloor,0) != pdTRUE){
             printf("Destination queue full\n");
+            LED_On();
+        }
+
+        Clear_Buffer();
+
+        printf("Do you wish to enter any more floors? [y/n]: ");
+        
+        fgets(buffer,sizeof(buffer),stdin);
+
+        sscanf(buffer,"%c",&response);
+
+
+        response = tolower(response);
+
+
+        if (response != 'y' && response != 'n'){
+            printf("Please enter y or n\n");
+        
         }
 
 
-        do
-        {
-            printf("Do you wish to enter any more floors? [y/n]: ");
-
-            if (scanf(" %c",&response) != 1){
-                Clear_Buffer();
-
-                response = '\0';
-
-                continue;
-            }
+    }while (response != 'y' && response != 'n');
 
 
-            response =(char)tolower((unsigned char)response);
-            Clear_Buffer();
-
-
-            if (response != 'y' &&response != 'n')
-            {
-                printf("Please enter y or n\n");
-            }
-
-
-        } while (response != 'y' && response != 'n');
-    } while (response == 'y');
 }
