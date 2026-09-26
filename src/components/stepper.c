@@ -1,4 +1,6 @@
 #include "components/stepper.h"
+#include "freertos/idf_additions.h"
+#include "freertos/projdefs.h"
 
 
 static const uint64_t Stepper_Pin_Bitmask = 
@@ -40,6 +42,8 @@ Cab Stepper_Init() {
     if (result != ESP_OK){
         ESP_LOGE(TAG, "Failed to configure the button gpio: %s", esp_err_to_name(result));
     }
+
+    return cab;
 }
 
 static void Set_Output( Cab *cab,int active_index){
@@ -63,16 +67,16 @@ void Stepper_Movement(Cab *cab ){
 
     for (int i = 0; i < TOTAL_STEPS; i++) {
         Set_Output(cab,0);
-        esp_rom_delay_us(2000);
+        vTaskDelay(pdMS_TO_TICKS(2));
 
         Set_Output(cab,1);
-        esp_rom_delay_us(2000);
+        vTaskDelay(pdMS_TO_TICKS(2));
 
         Set_Output(cab,2);
-        esp_rom_delay_us(2000);
+        vTaskDelay(pdMS_TO_TICKS(2));
 
         Set_Output(cab,3);
-        esp_rom_delay_us(2000);
+        vTaskDelay(pdMS_TO_TICKS(2));
     }
 
     Reset_Stepper(cab);

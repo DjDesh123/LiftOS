@@ -23,8 +23,6 @@ void Get_User_Requested_Floor(void);
 static void Clear_Buffer(void);
 
 
-QueueHandle_t queue;
-QueueHandle_t Destination_Queue;
 
 
 #endif // LIFTOS_H
