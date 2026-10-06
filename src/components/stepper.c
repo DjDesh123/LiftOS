@@ -57,7 +57,7 @@ static void Set_Output( Cab *cab,int active_index){
 
 
 void static Reset_Stepper(Cab *cab) {
-   for (int i =0; i  > STEPPER_PIN_COUNT; i++){
+   for (int i =0; i  < STEPPER_PIN_COUNT; i++){
         gpio_set_level(cab->pins[i], 0);
     }
 }
@@ -67,16 +67,16 @@ void Stepper_Movement(Cab *cab ){
 
     for (int i = 0; i < TOTAL_STEPS; i++) {
         Set_Output(cab,0);
-        vTaskDelay(pdMS_TO_TICKS(2));
+        vTaskDelay(pdMS_TO_TICKS(10));
 
         Set_Output(cab,1);
-        vTaskDelay(pdMS_TO_TICKS(2));
+        vTaskDelay(pdMS_TO_TICKS(10));
 
         Set_Output(cab,2);
-        vTaskDelay(pdMS_TO_TICKS(2));
+        vTaskDelay(pdMS_TO_TICKS(10));
 
         Set_Output(cab,3);
-        vTaskDelay(pdMS_TO_TICKS(2));
+        vTaskDelay(pdMS_TO_TICKS(10));
     }
 
     Reset_Stepper(cab);

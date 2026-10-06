@@ -1,7 +1,6 @@
 #include "LiftOS.h"
-#include "components/LED.h"
-#include "esp_err.h"
 
+static void UI_handle_event(Cab_States state);
 
 
 QueueHandle_t queue;
@@ -100,8 +99,11 @@ void Destination_Task(void *parameter)
                 if (xQueueReceive(queue,&RequestedFloor,portMAX_DELAY) == pdTRUE){
                     cab->Desired_Floor = RequestedFloor;
 
-
+                    UI_handle_event(cab->states);
+                    
                     Close_Door();
+                    
+                    vTaskDelay(pdMS_TO_TICKS(5));
 
 
                     cab->states =CAB_MOVING_TO_PICKUP;
@@ -112,12 +114,17 @@ void Destination_Task(void *parameter)
 
             case CAB_MOVING_TO_PICKUP:
 
+                UI_handle_event(cab->states);
+
                 Stepper_Movement(cab);
+;
+                vTaskDelay(pdMS_TO_TICKS(5));
 
-
-                cab->Floor_Position =cab->Desired_Floor;
+                cab->Floor_Position = cab->Desired_Floor;
 
                 Open_Door();
+
+                vTaskDelay(pdMS_TO_TICKS(5));
 
                 Get_User_Requested_Floor();
 
@@ -129,10 +136,14 @@ void Destination_Task(void *parameter)
             case CAB_WAITING_FOR_DESTINATION:
 
                 if (xQueueReceive(Destination_Queue,&RequestedFloor,portMAX_DELAY) == pdTRUE){
+                    
                     cab->Desired_Floor = RequestedFloor;
+
+                    UI_handle_event(cab->states);
 
                     Close_Door();
 
+                    vTaskDelay(pdMS_TO_TICKS(5));
 
                     cab->states = CAB_MOVING_TO_DESTINATION;
                 }
@@ -143,16 +154,26 @@ void Destination_Task(void *parameter)
         
             case CAB_MOVING_TO_DESTINATION:
 
+                UI_handle_event(cab->states);
+
                 Stepper_Movement(cab);
 
-                cab->Floor_Position =cab->Desired_Floor;
+                vTaskDelay(pdMS_TO_TICKS(5));
+
+
+                cab->Floor_Position = cab->Desired_Floor;
+
+
                 Open_Door();
+
+                vTaskDelay(pdMS_TO_TICKS(5));
 
                 if (xQueueReceive(Destination_Queue,&RequestedFloor,0) == pdTRUE){
                     cab->Desired_Floor = RequestedFloor;
 
 
                     Close_Door();
+                    vTaskDelay(pdMS_TO_TICKS(5));
                 }
                 else
                 {
@@ -163,7 +184,7 @@ void Destination_Task(void *parameter)
                 break;
         }
     }
-    vTaskDelay(pdMS_TO_TICKS(10));
+    
 }
 
 
@@ -265,4 +286,22 @@ void Get_User_Requested_Floor(void)
     }while (response != 'y' && response != 'n');
 
 
+}
+
+static void UI_handle_event(Cab_States state){
+    switch (state)
+    {
+        case CAB_IDLE:
+            printf("Cab is idle\n");
+            break;
+        case CAB_MOVING_TO_PICKUP:
+            printf("Cab is moving to pickup\n");
+            break;
+        case CAB_WAITING_FOR_DESTINATION:
+            printf("Cab is waiting for destination\n");
+            break;
+        case CAB_MOVING_TO_DESTINATION:
+            printf("Cab is moving to destination\n");
+            break;
+    }
 }
